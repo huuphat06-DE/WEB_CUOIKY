@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Thanh Toán & Đặt Hàng - Chuỗi Mỹ Phẩm SkinViet_MyPham Shop</title>
+</head>
+<body>
+
+    <div class="container py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none text-muted">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/cart}" class="text-decoration-none text-muted">Giỏ hàng</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Thanh toán</li>
+            </ol>
+        </nav>
+
+        <h2 class="fw-bold mb-4"><i class="fa-solid fa-credit-card text-danger me-2"></i>Thanh Toán Đặt Hàng</h2>
+
+        <form th:action="@{/checkout}" method="post" th:object="${orderForm}">
+            <div class="row g-4">
+                <!-- THÔNG TIN ĐẶT HÀNG & CHỌN HÌNH THỨC NHẬN (MÔ HÌNH CHUỖI) -->
+                <div class="col-lg-7">
+                    <!-- HÌNH THỨC NHẬN HÀNG (CORE CHUỖI) -->
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                        <h5 class="fw-bold mb-3"><i class="fa-solid fa-store text-danger me-2"></i>1. Chọn Hình Thức Nhận Hàng</h5>
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label class="card p-3 rounded-3 border cursor-pointer h-100" for="typeDelivery">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="orderType" id="typeDelivery" 
+                                               value="DELIVERY" checked onchange="toggleOrderType('DELIVERY')">
+                                        <label class="form-check-label fw-bold text-dark" for="typeDelivery">
+                                            <i class="fa-solid fa-truck-fast text-primary me-1"></i> Giao tận nơi
+                                        </label>
+                                    </div>
+                                    <div class="small text-muted mt-2">Giao tận nhà toàn quốc (Phí ship: 30.000đ)</div>
+                                </label>
+                            </div>
+                            <div class="col-6">
+                                <label class="card p-3 rounded-3 border cursor-pointer h-100" for="typePickup">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="orderType" id="typePickup" 
+                                               value="PICKUP" onchange="toggleOrderType('PICKUP')">
+                                        <label class="form-check-label fw-bold text-dark" for="typePickup">
+                                            <i class="fa-solid fa-shop text-success me-1"></i> Nhận tại cửa hàng
+                                        </label>
+                                    </div>
+                                    <div class="small text-muted mt-2">Ghé chi nhánh lấy ngay (Miễn phí ship)</div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Khối chọn chi nhánh khi chọn PICKUP hoặc xuất kho -->
+                        <div class="mb-3" id="branchSelectBox">
+                            <label class="form-label fw-semibold small text-muted text-uppercase">Chi nhánh phục vụ / nhận hàng:</label>
+                            <select name="branchId" class="form-select rounded-3">
+                                <option th:each="b : ${branches}" th:value="${b.id}" 
+                                        th:text="${b.name + ' - ' + b.address + ' (' + b.phone + ')'}">
+                                    OneShop Quận 1
+                                </option>
+                            </select>
+                            <div class="small text-muted mt-1" id="pickupNotice" style="display: none;">
+                                <i class="fa-solid fa-info-circle text-success me-1"></i> Nhân viên chi nhánh sẽ chuẩn bị hàng sẵn sàng để bạn ghé lấy.
+                            </div>
+                        </div>
+
+                        <!-- Khối địa chỉ giao hàng -->
+                        <div class="mb-3" id="deliveryAddressBox">
+                            <label class="form-label fw-semibold small text-muted text-uppercase">Địa chỉ giao nhận tận nơi:</label>
+                            <input type="text" name="shippingAddress" th:field="*{shippingAddress}" 
+                                   class="form-control rounded-3" placeholder="Số nhà, tên đường, phường/xã, quận/huyện...">
+                        </div>
+                    </div>
+
+                    <!-- THÔNG TIN NGƯỜI NHẬN -->
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                        <h5 class="fw-bold mb-3"><i class="fa-regular fa-user text-danger me-2"></i>2. Thông Tin Khách Hàng</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Họ và tên người nhận *</label>
+                                <input type="text" th:field="*{customerName}" class="form-control rounded-3" placeholder="Nguyễn Văn A" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Số điện thoại *</label>
+                                <input type="tel" th:field="*{customerPhone}" class="form-control rounded-3" placeholder="0912345678" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold">Email nhận hóa đơn</label>
+                                <input type="email" th:field="*{customerEmail}" class="form-control rounded-3" placeholder="email@example.com">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold">Ghi chú thêm cho đơn hàng</label>
+                                <textarea th:field="*{note}" class="form-control rounded-3" rows="2" placeholder="Thời gian giao thuận tiện, gói quà..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PHƯƠNG THỨC THANH TOÁN -->
+                    <div class="card border-0 shadow-sm rounded-4 p-4">
+                        <h5 class="fw-bold mb-3"><i class="fa-regular fa-credit-card text-danger me-2"></i>3. Phương Thức Thanh Toán</h5>
+                        <div class="d-flex flex-column gap-2">
+                            <label class="form-check card p-3 rounded-3 border d-flex flex-row align-items-center gap-3 cursor-pointer">
+                                <input class="form-check-input ms-0" type="radio" name="paymentMethod" value="COD" checked>
+                                <div>
+                                    <div class="fw-semibold text-dark"><i class="fa-solid fa-money-bill-wave text-success me-2"></i>Thanh toán tiền mặt khi nhận hàng (COD)</div>
+                                    <div class="small text-muted">Thanh toán an toàn khi nhận được mỹ phẩm tại nhà hoặc tại quầy</div>
+                                </div>
+                            </label>
+                            <label class="form-check card p-3 rounded-3 border d-flex flex-row align-items-center gap-3 cursor-pointer">
+                                <input class="form-check-input ms-0" type="radio" name="paymentMethod" value="VNPAY">
+                                <div>
+                                    <div class="fw-semibold text-dark"><i class="fa-solid fa-qrcode text-danger me-2"></i>Thanh toán Online VNPAY (Sandbox)</div>
+                                    <div class="small text-muted">Thanh toán qua quét mã QR VNPAY / Thẻ ATM nội địa / Visa</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TÓM TẮT ĐƠN HÀNG PHÍA TAY PHẢI -->
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 90px;">
+                        <h5 class="fw-bold mb-3">Đơn Hàng Của Bạn (<span th:text="${cart.totalQuantity}">0</span> sản phẩm)</h5>
+
+                        <!-- Items List -->
+                        <div class="d-flex flex-column gap-3 mb-3 border-bottom pb-3" style="max-height: 280px; overflow-y: auto;">
+                            <div class="d-flex align-items-center gap-3" th:each="item : ${cart.getItemList()}">
+                                <img th:src="${item.image}" width="50" height="50" class="rounded-2 border" style="object-fit: cover;">
+                                <div class="flex-grow-1 text-truncate">
+                                    <div class="small fw-semibold text-dark text-truncate" th:text="${item.name}">Tên sản phẩm</div>
+                                    <div class="small text-muted" th:text="${item.quantity} + ' x ' + ${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">1 x 200.000 đ</div>
+                                </div>
+                                <div class="small fw-bold text-dark" th:text="${#numbers.formatDecimal(item.getSubtotal(), 0, 'COMMA', 0, 'POINT')} + ' đ'">200.000 đ</div>
+                            </div>
+                        </div>
+
+                        <!-- Calculations -->
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-muted">Tiền hàng:</span>
+                            <span class="fw-semibold text-dark" th:text="${#numbers.formatDecimal(cart.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">500.000 đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 small">
+                            <span class="text-muted">Phí vận chuyển:</span>
+                            <span class="fw-semibold text-dark" id="displayShippingFee">30.000 đ</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-baseline mb-4">
+                            <span class="fw-bold text-dark fs-5">Tổng thanh toán:</span>
+                            <span class="h4 fw-bold text-danger m-0" id="displayTotal">530.000 đ</span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary-oneshop w-100 py-3 fs-6">
+                            <i class="fa-solid fa-lock me-2"></i> Xác nhận đặt hàng
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script th:inline="javascript">
+        const rawCartAmount = /*[[${cart.totalAmount}]]*/ 500000;
+
+        function toggleOrderType(type) {
+            const addressBox = document.getElementById('deliveryAddressBox');
+            const pickupNotice = document.getElementById('pickupNotice');
+            const shippingFeeEl = document.getElementById('displayShippingFee');
+            const totalEl = document.getElementById('displayTotal');
+
+            if (type === 'PICKUP') {
+                addressBox.style.display = 'none';
+                pickupNotice.style.display = 'block';
+                shippingFeeEl.innerText = '0 đ (Miễn phí)';
+                totalEl.innerText = new Intl.NumberFormat('vi-VN').format(rawCartAmount) + ' đ';
+            } else {
+                addressBox.style.display = 'block';
+                pickupNotice.style.display = 'none';
+                shippingFeeEl.innerText = '30.000 đ';
+                totalEl.innerText = new Intl.NumberFormat('vi-VN').format(Number(rawCartAmount) + 30000) + ' đ';
+            }
+        }
+        // Khởi tạo
+        toggleOrderType('DELIVERY');
+    </script>
+
+</body>
+</html>

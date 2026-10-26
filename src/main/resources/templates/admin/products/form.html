@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Thông Tin Sản Phẩm Mỹ Phẩm - SkinViet Admin</title>
+</head>
+<body>
+
+    <div class="mb-4">
+        <a th:href="@{/admin/products}" class="text-muted text-decoration-none small">
+            <i class="fa-solid fa-arrow-left me-1"></i> Quay lại danh sách sản phẩm
+        </a>
+        <h4 class="fw-bold mt-2" th:text="${product.id != null ? 'Cập Nhật Sản Phẩm' : 'Thêm Sản Phẩm Mới'}">Thông Tin Sản Phẩm</h4>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white" style="max-width: 850px;">
+        <form th:action="@{/admin/products/save}" method="post" th:object="${product}" enctype="multipart/form-data">
+            <input type="hidden" th:field="*{id}">
+            <input type="hidden" th:field="*{mainImage}">
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-8">
+                    <label class="form-label small fw-semibold">Tên Sản Phẩm *</label>
+                    <input type="text" th:field="*{name}" class="form-control" placeholder="Ví dụ: Serum La Roche-Posay Effaclar" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Mã SKU *</label>
+                    <input type="text" th:field="*{sku}" class="form-control" placeholder="LSP-EFF-01" required>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Danh Mục Sản Phẩm</label>
+                    <select th:field="*{category}" class="form-select">
+                        <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Thương Hiệu</label>
+                    <select th:field="*{brand}" class="form-select">
+                        <option th:each="b : ${brands}" th:value="${b.id}" th:text="${b.name}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Giá Gốc (VNĐ) *</label>
+                    <input type="number" th:field="*{originalPrice}" class="form-control" placeholder="450000" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Giá Khuyến Mãi (VNĐ) *</label>
+                    <input type="number" th:field="*{salePrice}" class="form-control" placeholder="380000" required>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Loại Da Phù Hợp</label>
+                    <select th:field="*{skinType}" class="form-select">
+                        <option value="Da dầu mụn">Da dầu / Da mụn</option>
+                        <option value="Da khô">Da khô / Thiếu ẩm</option>
+                        <option value="Da nhạy cảm">Da nhạy cảm</option>
+                        <option value="Da hỗn hợp">Da hỗn hợp</option>
+                        <option value="Mọi loại da">Mọi loại da</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Dung Tích / Trọng Lượng</label>
+                    <input type="text" th:field="*{volume}" class="form-control" placeholder="50ml, 30g...">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Xuất Xứ</label>
+                    <input type="text" th:field="*{origin}" class="form-control" placeholder="Pháp, Hàn Quốc, Mỹ...">
+                </div>
+            </div>
+
+            <!-- UPLOAD HÌNH ẢNH QUA CLOUDINARY -->
+            <div class="mb-3 p-3 bg-light rounded-3 border">
+                <label class="form-label small fw-bold text-danger">
+                    <i class="fa-solid fa-cloud-arrow-up me-1"></i> Tải Ảnh Sản Phẩm Lên Cloudinary:
+                </label>
+                <input type="file" name="imageFile" class="form-control mb-2" accept="image/*">
+                <div class="small text-muted" th:if="${product.mainImage != null}">
+                    Ảnh hiện tại: <a th:href="${product.mainImage}" target="_blank" th:text="${product.mainImage}">URL</a>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label small fw-semibold">Mô Tả & Hướng Dẫn Sử Dụng</label>
+                <textarea th:field="*{description}" class="form-control" rows="5" placeholder="Thành phần, công dụng và cách dùng..."></textarea>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" th:field="*{featured}" id="featSwitch">
+                        <label class="form-check-label fw-semibold" for="featSwitch">Sản Phẩm Bán Chạy / Nổi Bật</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" th:field="*{active}" id="activeSwitch">
+                        <label class="form-check-label fw-semibold" for="activeSwitch">Đang Kinh Doanh</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-danger px-4 rounded-pill">
+                    <i class="fa-solid fa-save me-1"></i> Lưu Sản Phẩm
+                </button>
+                <a th:href="@{/admin/products}" class="btn btn-outline-secondary px-4 rounded-pill">Hủy</a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

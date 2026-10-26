@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><sitemesh:write property='title'/> - SkinViet_MyPham Shop Mỹ Phẩm Chính Hãng</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Custom Client CSS -->
+    <link rel="stylesheet" th:href="@{/css/client.css}">
+    <sitemesh:write property='head'/>
+</head>
+<body>
+
+    <!-- TOPBAR: THÔNG TIN CHI NHÁNH & HOTLINE -->
+    <div class="topbar">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <span><i class="fa-solid fa-location-dot text-danger me-1"></i> Chi nhánh phục vụ:</span>
+                <select id="globalBranchSelect" class="form-select form-select-sm bg-dark text-white border-secondary" style="width: auto; padding: 2px 28px 2px 8px; font-size: 0.8rem;">
+                    <option th:each="b : ${globalBranches}" 
+                            th:value="${b.id}" 
+                            th:text="${b.name + ' (' + b.provinceCity + ')'}" 
+                            th:selected="${selectedBranch != null and selectedBranch.id == b.id}">
+                    </option>
+                </select>
+                <span class="d-none d-md-inline text-secondary">|</span>
+                <span class="d-none d-md-inline"><i class="fa-regular fa-clock me-1"></i> 08:30 - 22:00</span>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <a href="tel:19001234"><i class="fa-solid fa-phone me-1"></i> Hotline: 1900 1234</a>
+                <span class="text-secondary">|</span>
+                <a th:href="@{/shop}"><i class="fa-solid fa-shield-halved me-1"></i> 100% Chính Hãng</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-oneshop">
+        <div class="container">
+            <!-- Brand Logo -->
+            <a class="brand-logo" th:href="@{/}">
+                <i class="fa-solid fa-gem text-danger"></i> SkinViet<span>_MyPham Shop</span>
+            </a>
+
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler border-0" type="button" data-bs-dismiss="collapse" data-bs-target="#oneshopNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Nav Content -->
+            <div class="collapse navbar-collapse" id="oneshopNav">
+                <!-- Navigation Links -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}"><i class="fa-solid fa-house me-1"></i> Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/shop}"><i class="fa-solid fa-bag-shopping me-1"></i> Cửa hàng mỹ phẩm</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-sparkles me-1"></i> Loại da
+                        </a>
+                        <ul class="dropdown-menu border-0 shadow-sm">
+                            <li><a class="dropdown-item py-2" th:href="@{/shop(skinType='Da dầu mụn')}">Da dầu / Da mụn</a></li>
+                            <li><a class="dropdown-item py-2" th:href="@{/shop(skinType='Da khô')}">Da khô / Thiếu ẩm</a></li>
+                            <li><a class="dropdown-item py-2" th:href="@{/shop(skinType='Da nhạy cảm')}">Da nhạy cảm</a></li>
+                            <li><a class="dropdown-item py-2" th:href="@{/shop(skinType='Da hỗn hợp')}">Da hỗn hợp</a></li>
+                            <li><a class="dropdown-item py-2" th:href="@{/shop(skinType='Mọi loại da')}">Mọi loại da</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/shop}"><i class="fa-solid fa-tags me-1"></i> Khuyến mãi</a>
+                    </li>
+                </ul>
+
+                <!-- Search Bar -->
+                <form class="search-form me-3" th:action="@{/shop}" method="get">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" name="keyword" class="form-control" placeholder="Tìm son, serum, kem chống nắng..." th:value="${param.keyword}">
+                </form>
+
+                <!-- Actions: Cart & User -->
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Cart Icon Button -->
+                    <a th:href="@{/cart}" class="btn btn-light rounded-circle position-relative p-2" title="Giỏ hàng">
+                        <i class="fa-solid fa-cart-shopping fs-5 text-dark"></i>
+                        <span id="cartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+                              th:text="${cartCount}" th:style="${cartCount > 0 ? '' : 'display: none;'}">0</span>
+                    </a>
+
+                    <!-- User Account Dropdown -->
+                    <div class="dropdown" th:if="${currentUser != null}">
+                        <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2 rounded-pill px-3 py-1" type="button" data-bs-toggle="dropdown">
+                            <img th:src="${currentUser.avatar}" alt="Avatar" class="rounded-circle" width="28" height="28" style="object-fit: cover;">
+                            <span class="small fw-semibold" th:text="${currentUser.fullName}">Tài khoản</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm mt-2">
+                            <li><h6 class="dropdown-header" th:text="'Xin chào, ' + ${currentUser.username}">User</h6></li>
+                            <li><a class="dropdown-item py-2" th:href="@{/profile}"><i class="fa-regular fa-user me-2"></i> Hồ sơ & Đơn hàng</a></li>
+                            <!-- Nếu là Admin hoặc Quản lý chi nhánh, hiển thị link vào trang Quản trị -->
+                            <li th:if="${currentUser.role.name() == 'ROLE_ADMIN' or currentUser.role.name() == 'ROLE_MANAGER'}">
+                                <a class="dropdown-item py-2 text-primary fw-bold" th:href="@{/admin/dashboard}"><i class="fa-solid fa-gauge me-2"></i> Quản trị chuỗi SkinViet_MyPham Shop</a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form th:action="@{/auth/logout}" method="post" class="m-0">
+                                    <button type="submit" class="dropdown-item py-2 text-danger"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Đăng xuất</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Nút Đăng nhập / Đăng ký nếu chưa đăng nhập -->
+                    <div class="d-flex gap-2" th:unless="${currentUser != null}">
+                        <a th:href="@{/auth/login}" class="btn btn-outline-oneshop btn-sm">Đăng nhập</a>
+                        <a th:href="@{/auth/register}" class="btn btn-primary-oneshop btn-sm">Đăng ký</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN BODY CONTENT (Sitemesh injects here) -->
+    <main>
+        <sitemesh:write property='body'/>
+    </main>
+
+    <!-- FOOTER: THÔNG TIN HỆ THỐNG CHUỖI CỬA HÀNG -->
+    <footer class="footer-oneshop">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <a class="brand-logo text-white mb-3" th:href="@{/}">
+                        <i class="fa-solid fa-gem text-danger"></i> SkinViet<span class="text-danger">_MyPham Shop</span>
+                    </a>
+                    <p class="text-secondary small">
+                        Hệ thống chuỗi bán lẻ mỹ phẩm chính hãng hàng đầu. Cung cấp hơn 500+ thương hiệu làm đẹp uy tín toàn cầu với trải nghiệm mua sắm O2O hiện đại nhất.
+                    </p>
+                    <div class="d-flex gap-3 text-secondary mt-3">
+                        <a href="#"><i class="fa-brands fa-facebook fs-5"></i></a>
+                        <a href="#"><i class="fa-brands fa-instagram fs-5"></i></a>
+                        <a href="#"><i class="fa-brands fa-tiktok fs-5"></i></a>
+                        <a href="#"><i class="fa-brands fa-youtube fs-5"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <h5>Hệ Thống Chi Nhánh Cửa Hàng</h5>
+                    <ul class="list-unstyled small text-secondary">
+                        <li class="mb-2" th:each="b : ${globalBranches}">
+                            <strong class="text-white" th:text="${b.name}">Chi nhánh:</strong><br>
+                            <span th:text="${b.address}">Địa chỉ</span> | Hotline: <span th:text="${b.phone}">0123</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <h5>Hỗ Trợ Khách Hàng</h5>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="#">Chính sách đổi trả 14 ngày</a></li>
+                        <li class="mb-2"><a href="#">Chính sách vận chuyển</a></li>
+                        <li class="mb-2"><a href="#">Tra cứu đơn hàng</a></li>
+                        <li class="mb-2"><a href="#">Cam kết hàng chính hãng 100%</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <h5>Thanh Toán & Đối Tác</h5>
+                    <p class="small text-secondary">Chấp nhận thanh toán tiền mặt (COD), VNPay, Thẻ ATM/Visa.</p>
+                    <div class="d-flex flex-wrap gap-2 text-white fs-4 mt-2">
+                        <i class="fa-brands fa-cc-visa"></i>
+                        <i class="fa-brands fa-cc-mastercard"></i>
+                        <i class="fa-solid fa-qrcode text-danger"></i>
+                        <i class="fa-solid fa-money-bill-wave text-success"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom text-center text-secondary">
+                <p class="m-0">© 2026 SkinViet_MyPham Shop. Hệ thống bán lẻ mỹ phẩm chính hãng theo mô hình chuỗi cửa hàng.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Client JS -->
+    <script th:src="@{/js/client.js}"></script>
+</body>
+</html>

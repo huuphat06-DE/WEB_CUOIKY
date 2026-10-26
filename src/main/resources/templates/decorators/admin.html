@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><sitemesh:write property='title'/> - Quản Trị Chuỗi SkinViet_MyPham Shop</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN cho Biểu đồ doanh thu -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Admin CSS -->
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <sitemesh:write property='head'/>
+</head>
+<body class="admin-body">
+
+    <div class="admin-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-brand">
+                <i class="fa-solid fa-gem text-danger"></i> SkinViet <span class="badge bg-danger fs-6">Admin</span>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="menu-header">Tổng quan hệ thống</li>
+                <li>
+                    <a th:href="@{/admin/dashboard}"><i class="fa-solid fa-chart-pie"></i> Bảng điều khiển</a>
+                </li>
+
+                <li class="menu-header">Mô hình Chuỗi cửa hàng</li>
+                <li>
+                    <a th:href="@{/admin/branches}"><i class="fa-solid fa-store"></i> Quản lý Chi nhánh</a>
+                </li>
+                <li>
+                    <a th:href="@{/admin/stocks}"><i class="fa-solid fa-boxes-stacked"></i> Tồn kho chuỗi</a>
+                </li>
+
+                <li class="menu-header">Quản lý Bán hàng</li>
+                <li>
+                    <a th:href="@{/admin/products}"><i class="fa-solid fa-pump-soap"></i> Sản phẩm mỹ phẩm</a>
+                </li>
+                <li>
+                    <a th:href="@{/admin/orders}"><i class="fa-solid fa-receipt"></i> Quản lý Đơn hàng</a>
+                </li>
+
+                <li class="menu-header">Cửa hàng trực tuyến</li>
+                <li>
+                    <a th:href="@{/}" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Xem Website bán hàng</a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="admin-main">
+            <!-- HEADER -->
+            <header class="admin-header">
+                <div>
+                    <h5 class="m-0 fw-bold text-dark">Hệ Thống Quản Trị Chuỗi Mỹ Phẩm SkinViet_MyPham Shop</h5>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="text-end" th:if="${currentUser != null}">
+                        <div class="fw-semibold text-dark" th:text="${currentUser.fullName}">Quản trị viên</div>
+                        <span class="badge bg-primary" th:text="${currentUser.role.name()}">ROLE_ADMIN</span>
+                    </div>
+                    <form th:action="@{/auth/logout}" method="post" class="m-0">
+                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                            <i class="fa-solid fa-right-from-bracket me-1"></i> Đăng xuất
+                        </button>
+                    </form>
+                </div>
+            </header>
+
+            <!-- BODY CONTENT (Sitemesh injects here) -->
+            <div class="admin-content">
+                <sitemesh:write property='body'/>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

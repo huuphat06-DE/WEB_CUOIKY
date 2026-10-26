@@ -1,0 +1,157 @@
+/* ===================================================================
+   ONESHOP ADMIN DASHBOARD STYLING
+   Thiết kế giao diện quản trị chuỗi cửa hàng (Thành viên 1)
+   =================================================================== */
+
+:root {
+    --sidebar-bg: #1e1e2d;
+    --sidebar-hover: #27273a;
+    --sidebar-active: #3699ff;
+    --content-bg: #f5f8fa;
+    --card-border: #eff2f5;
+}
+
+body.admin-body {
+    background-color: var(--content-bg);
+    font-family: 'Outfit', sans-serif;
+    color: #3f4254;
+    margin: 0;
+}
+
+/* ADMIN LAYOUT WRAPPER */
+.admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+.admin-sidebar {
+    width: 260px;
+    background: var(--sidebar-bg);
+    color: #a2a3b7;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+.sidebar-brand {
+    padding: 24px 20px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.sidebar-menu {
+    list-style: none;
+    padding: 15px 12px;
+    margin: 0;
+    flex-grow: 1;
+}
+.sidebar-menu .menu-header {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #595d7e;
+    padding: 12px 14px 6px;
+}
+.sidebar-menu a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    color: #a2a3b7;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    margin-bottom: 4px;
+}
+.sidebar-menu a:hover {
+    color: #ffffff;
+    background: var(--sidebar-hover);
+}
+.sidebar-menu a.active {
+    color: #ffffff;
+    background: #d84374;
+}
+
+/* ADMIN CONTENT */
+.admin-main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.admin-header {
+    height: 70px;
+    background: #ffffff;
+    border-bottom: 1px solid #ebedf2;
+    padding: 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.admin-content {
+    padding: 30px;
+    flex-grow: 1;
+}
+
+/* STAT CARDS */
+.stat-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid var(--card-border);
+    box-shadow: 0 0 20px 0 rgba(76, 87, 125, 0.02);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.2s;
+}
+.stat-card:hover {
+    transform: translateY(-3px);
+}
+.stat-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+.stat-icon.primary { background: rgba(216, 67, 116, 0.1); color: #d84374; }
+.stat-icon.success { background: rgba(80, 205, 137, 0.1); color: #50cd89; }
+.stat-icon.info { background: rgba(0, 158, 247, 0.1); color: #009ef7; }
+.stat-icon.warning { background: rgba(255, 199, 0, 0.1); color: #ffc700; }
+
+.stat-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #181c32;
+    margin: 4px 0 0;
+}
+.stat-title {
+    color: #b5b5c3;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* BADGES */
+.badge-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+.badge-status.PENDING { background: #fff8dd; color: #ffc700; }
+.badge-status.CONFIRMED { background: #e8fff3; color: #50cd89; }
+.badge-status.SHIPPING { background: #f1faff; color: #009ef7; }
+.badge-status.COMPLETED { background: #e8fff3; color: #10b981; }
+.badge-status.CANCELLED { background: #fff5f8; color: #f1416c; }

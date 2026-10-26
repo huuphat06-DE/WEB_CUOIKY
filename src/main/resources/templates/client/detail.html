@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${product.name} + ' - OneShop Mỹ Phẩm'"></title>
+</head>
+<body>
+
+    <div class="container py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none text-muted">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/shop}" class="text-decoration-none text-muted">Mỹ phẩm</a></li>
+                <li class="breadcrumb-item" th:if="${product.category != null}">
+                    <a th:href="@{/shop(categoryId=${product.category.id})}" class="text-decoration-none text-muted" th:text="${product.category.name}">Danh mục</a>
+                </li>
+                <li class="breadcrumb-item active text-truncate" style="max-width: 300px;" th:text="${product.name}">Tên sản phẩm</li>
+            </ol>
+        </nav>
+
+        <!-- PRODUCT OVERVIEW -->
+        <div class="row g-5 mb-5">
+            <!-- Product Images -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden p-3 bg-white text-center mb-3">
+                    <img id="mainProductImage" th:src="${product.mainImage}" th:alt="${product.name}" 
+                         class="img-fluid rounded-3" style="max-height: 450px; width: 100%; object-fit: contain;">
+                </div>
+            </div>
+
+            <!-- Product Purchase Info -->
+            <div class="col-lg-7">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-danger rounded-pill px-3 py-1" th:text="${product.skinType}">Da dầu mụn</span>
+                    <span class="badge bg-light text-dark border rounded-pill px-3 py-1" th:text="'SKU: ' + ${product.sku}">SKU</span>
+                    <span class="badge bg-light text-primary border rounded-pill px-3 py-1" th:if="${product.brand != null}" th:text="${product.brand.name}">Brand</span>
+                </div>
+
+                <h1 class="h2 fw-bold text-dark mb-3" th:text="${product.name}">Tên Sản Phẩm Mỹ Phẩm Cao Cấp</h1>
+
+                <!-- Price Box -->
+                <div class="p-3 bg-light rounded-4 d-flex align-items-baseline gap-3 mb-4">
+                    <span class="h2 fw-bold text-danger m-0" 
+                          th:text="${#numbers.formatDecimal(product.salePrice, 0, 'COMMA', 0, 'POINT')} + ' đ'">350.000 đ</span>
+                    <span class="fs-5 text-muted text-decoration-line-through" th:if="${product.originalPrice > product.salePrice}"
+                          th:text="${#numbers.formatDecimal(product.originalPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'">450.000 đ</span>
+                    <span class="badge bg-success" th:if="${product.originalPrice > product.salePrice}">Tiết kiệm 20%</span>
+                </div>
+
+                <!-- Attributes Table -->
+                <div class="row g-2 mb-4 small">
+                    <div class="col-6"><strong class="text-muted">Dung tích:</strong> <span class="text-dark fw-semibold" th:text="${product.volume}">50ml</span></div>
+                    <div class="col-6"><strong class="text-muted">Xuất xứ:</strong> <span class="text-dark fw-semibold" th:text="${product.origin}">Chính hãng</span></div>
+                    <div class="col-6"><strong class="text-muted">Công dụng chính:</strong> <span class="text-dark fw-semibold" th:text="${product.usageCategory}">Dưỡng ẩm</span></div>
+                    <div class="col-6"><strong class="text-muted">Tổng tồn kho toàn chuỗi:</strong> 
+                        <span class="badge bg-success" th:if="${product.getTotalStock() > 0}" th:text="${product.getTotalStock()} + ' sản phẩm'">10 sản phẩm</span>
+                        <span class="badge bg-danger" th:unless="${product.getTotalStock() > 0}">Tạm hết hàng</span>
+                    </div>
+                </div>
+
+                <!-- Add to Cart Form -->
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="input-group" style="width: 140px;">
+                        <button class="btn btn-outline-secondary" type="button" onclick="let q=document.getElementById('productQty'); if(q.value>1) q.value--;">-</button>
+                        <input type="number" id="productQty" class="form-control text-center" value="1" min="1" max="99">
+                        <button class="btn btn-outline-secondary" type="button" onclick="let q=document.getElementById('productQty'); q.value++;">+</button>
+                    </div>
+
+                    <button class="btn btn-primary-oneshop px-4 py-2 fs-6 flex-grow-1 btn-add-to-cart" 
+                            th:attr="data-product-id=${product.id}">
+                        <i class="fa-solid fa-cart-shopping me-2"></i> Thêm vào giỏ hàng
+                    </button>
+                </div>
+
+                <!-- ĐIỂM NHẤN ĐỀ TÀI: WIDGET KIỂM TRA TỒN KHO TẠI TỪNG CHI NHÁNH CHUỖI -->
+                <div class="card border border-primary-subtle rounded-4 p-3 bg-white shadow-sm">
+                    <div class="d-flex align-items-center gap-2 mb-2 text-danger fw-bold">
+                        <i class="fa-solid fa-shop"></i> Kiểm Tra Tồn Kho Tại Các Chi Nhánh Cửa Hàng:
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle mb-0">
+                            <thead class="table-light small text-muted">
+                                <tr>
+                                    <th>Chi nhánh cửa hàng</th>
+                                    <th>Địa chỉ</th>
+                                    <th>Tình trạng tồn kho</th>
+                                </tr>
+                            </thead>
+                            <tbody class="small">
+                                <tr th:each="branch : ${allBranches}">
+                                    <td class="fw-semibold text-dark">
+                                        <i class="fa-solid fa-location-dot text-danger me-1"></i>
+                                        <span th:text="${branch.name}">OneShop Quận 1</span>
+                                    </td>
+                                    <td class="text-muted" th:text="${branch.address}">Địa chỉ</td>
+                                    <td>
+                                        <span class="badge bg-success" th:if="${product.getStockAtBranch(branch.id) > 0}">
+                                            <i class="fa-solid fa-check me-1"></i> Còn <strong th:text="${product.getStockAtBranch(branch.id)}">5</strong> SP
+                                        </span>
+                                        <span class="badge bg-secondary" th:unless="${product.getStockAtBranch(branch.id) > 0}">
+                                            Hết hàng
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRODUCT DETAILS TABS -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-5">
+            <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active rounded-pill px-4" id="desc-tab" data-bs-toggle="pill" data-bs-target="#desc-content">Mô tả sản phẩm</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link rounded-pill px-4" id="review-tab" data-bs-toggle="pill" data-bs-target="#review-content">
+                        Đánh giá của khách hàng (<span th:text="${#lists.size(reviews)}">0</span>)
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="pills-tabContent">
+                <!-- Tab Mô tả -->
+                <div class="tab-pane fade show active lh-lg" id="desc-content">
+                    <div class="text-secondary" th:utext="${product.description != null ? product.description : 'Sản phẩm mỹ phẩm chính hãng với công thức tiên tiến giúp nuôi dưỡng và bảo vệ làn da khỏe đẹp toàn diện.'}">
+                        Mô tả chi tiết sản phẩm mỹ phẩm
+                    </div>
+                </div>
+
+                <!-- Tab Đánh giá -->
+                <div class="tab-pane fade" id="review-content">
+                    <div class="row g-4">
+                        <!-- Danh sách đánh giá -->
+                        <div class="col-lg-7">
+                            <h5 class="fw-bold mb-3">Nhận xét từ khách hàng đã mua</h5>
+                            <div class="d-flex flex-column gap-3" th:if="${not #lists.isEmpty(reviews)}">
+                                <div class="card border-0 bg-light rounded-3 p-3" th:each="rev : ${reviews}">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="fw-semibold text-dark" th:text="${rev.user.fullName}">Khách hàng</div>
+                                        <div class="text-warning small">
+                                            <i class="fa-solid fa-star" th:each="s : ${#numbers.sequence(1, rev.rating)}"></i>
+                                        </div>
+                                    </div>
+                                    <p class="m-0 text-secondary small" th:text="${rev.comment}">Bình luận nhận xét sản phẩm</p>
+                                </div>
+                            </div>
+                            <div class="text-muted small" th:if="${#lists.isEmpty(reviews)}">
+                                Chưa có đánh giá nào cho sản phẩm này. Hãy là người đầu tiên trải nghiệm!
+                            </div>
+                        </div>
+
+                        <!-- Form gửi đánh giá -->
+                        <div class="col-lg-5">
+                            <div class="card border p-3 rounded-4 bg-white shadow-sm">
+                                <h5 class="fw-bold mb-3">Viết đánh giá của bạn</h5>
+                                <form th:action="@{'/product/' + ${product.id} + '/review'}" method="post">
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold">Đánh giá số sao:</label>
+                                        <select name="rating" class="form-select form-select-sm">
+                                            <option value="5">⭐⭐⭐⭐⭐ (5 sao - Tuyệt vời)</option>
+                                            <option value="4">⭐⭐⭐⭐ (4 sao - Rất tốt)</option>
+                                            <option value="3">⭐⭐⭐ (3 sao - Tạm ổn)</option>
+                                            <option value="2">⭐⭐ (2 sao - Bình thường)</option>
+                                            <option value="1">⭐ (1 sao - Kém)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold">Bình luận cảm nhận:</label>
+                                        <textarea name="comment" class="form-control form-control-sm" rows="3" placeholder="Chia sẻ cảm nhận sau khi dùng kem/son này..." required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary-oneshop w-100 btn-sm">Gửi đánh giá</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

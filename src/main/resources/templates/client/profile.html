@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Hồ Sơ & Lịch Sử Đơn Hàng - SkinViet_MyPham Shop</title>
+</head>
+<body>
+
+    <div class="container py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none text-muted">Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Tài khoản của tôi</li>
+            </ol>
+        </nav>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show rounded-3" role="alert">
+            <span th:text="${successMessage}">Thành công</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="row g-4">
+            <!-- THÔNG TIN TÀI KHOẢN -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center mb-4">
+                    <img th:src="${user.avatar}" class="rounded-circle mx-auto mb-3 border p-1" width="100" height="100" style="object-fit: cover;">
+                    <h5 class="fw-bold mb-1" th:text="${user.fullName}">Tên người dùng</h5>
+                    <span class="badge bg-danger rounded-pill mx-auto mb-3" th:text="${user.role.name()}">ROLE_CUSTOMER</span>
+                    <div class="small text-muted mb-2"><i class="fa-regular fa-envelope me-1"></i> <span th:text="${user.email}">email</span></div>
+                    <div class="small text-muted"><i class="fa-solid fa-phone me-1"></i> <span th:text="${user.phone != null ? user.phone : 'Chưa cập nhật'}">phone</span></div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h6 class="fw-bold mb-3"><i class="fa-solid fa-user-pen me-2 text-danger"></i>Cập Nhật Thông Tin</h6>
+                    <form th:action="@{/profile/update}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Họ và tên</label>
+                            <input type="text" name="fullName" class="form-control form-control-sm rounded-3" th:value="${user.fullName}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Số điện thoại</label>
+                            <input type="tel" name="phone" class="form-control form-control-sm rounded-3" th:value="${user.phone}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Địa chỉ nhận hàng mặc định</label>
+                            <textarea name="address" class="form-control form-control-sm rounded-3" rows="2" th:text="${user.address}"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-outline-oneshop w-100 btn-sm">Lưu thay đổi</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- LỊCH SỬ ĐƠN HÀNG -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h5 class="fw-bold mb-4"><i class="fa-solid fa-clock-rotate-left text-danger me-2"></i>Lịch Sử Đơn Hàng Của Bạn</h5>
+
+                    <div class="d-flex flex-column gap-3" th:if="${not #lists.isEmpty(orders)}">
+                        <div class="card border rounded-3 p-3" th:each="ord : ${orders}">
+                            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                                <div>
+                                    <strong class="text-dark" th:text="${ord.orderCode}">ONE-20261026-1234</strong>
+                                    <span class="small text-muted ms-2" th:text="${#temporals.format(ord.createdAt, 'dd/MM/yyyy HH:mm')}">26/10/2026</span>
+                                </div>
+                                <span class="badge" th:classappend="'badge-status ' + ${ord.status.name()}" th:text="${ord.status}">PENDING</span>
+                            </div>
+
+                            <div class="small text-muted mb-2">
+                                <span><i class="fa-solid fa-store me-1"></i> Chi nhánh xử lý: <strong class="text-dark" th:text="${ord.branch != null ? ord.branch.name : 'Trung tâm'}">Chi nhánh</strong></span> |
+                                <span>Hình thức: <strong class="text-dark" th:text="${ord.orderType == T(com.oneshop.entity.Order.OrderType).PICKUP ? 'Nhận tại shop' : 'Giao tận nơi'}">Giao</strong></span>
+                            </div>
+
+                            <!-- Items in order -->
+                            <div class="border-top pt-2 mt-1">
+                                <div class="d-flex justify-content-between align-items-center py-1 small" th:each="it : ${ord.items}">
+                                    <div class="text-truncate" style="max-width: 400px;">
+                                        <span class="fw-semibold text-dark" th:text="${it.product.name}">Sản phẩm</span>
+                                        <span class="text-muted" th:text="' x ' + ${it.quantity}"> x 1</span>
+                                    </div>
+                                    <span class="fw-bold" th:text="${#numbers.formatDecimal(it.subtotal, 0, 'COMMA', 0, 'POINT')} + ' đ'">100.000 đ</span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2">
+                                <span class="small text-muted">Phương thức: <strong th:text="${ord.paymentMethod}">COD</strong> (<span th:text="${ord.paymentStatus}">UNPAID</span>)</span>
+                                <div>
+                                    <span class="small text-muted me-2">Tổng tiền:</span>
+                                    <span class="fw-bold text-danger fs-6" th:text="${#numbers.formatDecimal(ord.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">300.000 đ</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center py-5 text-muted" th:if="${#lists.isEmpty(orders)}">
+                        <i class="fa-solid fa-receipt fs-1 mb-2"></i>
+                        <p>Bạn chưa có đơn hàng nào.</p>
+                        <a th:href="@{/shop}" class="btn btn-outline-oneshop btn-sm">Mua sắm ngay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

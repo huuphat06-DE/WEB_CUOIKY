@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Cửa Hàng Mỹ Phẩm - Bộ Lọc Chuyên Sâu SkinViet_MyPham Shop</title>
+</head>
+<body>
+
+    <div class="container py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none text-muted">Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Cửa hàng mỹ phẩm</li>
+            </ol>
+        </nav>
+
+        <div class="row g-4">
+            <!-- SIDEBAR: BỘ LỌC MỸ PHẨM CHUYÊN BIỆT (THÀNH VIÊN 2) -->
+            <aside class="col-lg-3">
+                <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 90px;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold m-0"><i class="fa-solid fa-filter text-danger me-2"></i>Bộ Lọc Tìm Kiếm</h5>
+                        <a th:href="@{/shop}" class="text-danger small text-decoration-none">Đặt lại</a>
+                    </div>
+
+                    <form th:action="@{/shop}" method="get" id="filterForm">
+                        <!-- Tìm theo từ khóa -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold small text-muted text-uppercase">Từ khóa</label>
+                            <input type="text" name="keyword" class="form-control form-control-sm rounded-pill" 
+                                   placeholder="Tên sản phẩm, thành phần..." th:value="${selectedKeyword}">
+                        </div>
+
+                        <!-- Lọc theo loại da (Đặc thù mỹ phẩm) -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold small text-muted text-uppercase">Phù hợp loại da</label>
+                            <div class="d-flex flex-column gap-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="skinType" id="st_all" value="" 
+                                           th:checked="${selectedSkinType == null or selectedSkinType == ''}">
+                                    <label class="form-check-label small" for="st_all">Tất cả loại da</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="skinType" id="st_oily" value="Da dầu mụn"
+                                           th:checked="${selectedSkinType == 'Da dầu mụn'}">
+                                    <label class="form-check-label small" for="st_oily">Da dầu / Da mụn</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="skinType" id="st_dry" value="Da khô"
+                                           th:checked="${selectedSkinType == 'Da khô'}">
+                                    <label class="form-check-label small" for="st_dry">Da khô / Thiếu ẩm</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="skinType" id="st_sens" value="Da nhạy cảm"
+                                           th:checked="${selectedSkinType == 'Da nhạy cảm'}">
+                                    <label class="form-check-label small" for="st_sens">Da nhạy cảm</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="skinType" id="st_combo" value="Da hỗn hợp"
+                                           th:checked="${selectedSkinType == 'Da hỗn hợp'}">
+                                    <label class="form-check-label small" for="st_combo">Da hỗn hợp</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lọc theo Danh mục -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold small text-muted text-uppercase">Danh mục</label>
+                            <select name="categoryId" class="form-select form-select-sm rounded-pill">
+                                <option value="">Tất cả danh mục</option>
+                                <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"
+                                        th:selected="${selectedCategoryId == c.id}"></option>
+                            </select>
+                        </div>
+
+                        <!-- Lọc theo Thương hiệu -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold small text-muted text-uppercase">Thương hiệu</label>
+                            <select name="brandId" class="form-select form-select-sm rounded-pill">
+                                <option value="">Tất cả thương hiệu</option>
+                                <option th:each="b : ${brands}" th:value="${b.id}" th:text="${b.name}"
+                                        th:selected="${selectedBrandId == b.id}"></option>
+                            </select>
+                        </div>
+
+                        <!-- Lọc theo Giá -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold small text-muted text-uppercase">Khoảng giá (VNĐ)</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="number" name="minPrice" class="form-control form-control-sm rounded-pill" 
+                                           placeholder="Từ" th:value="${selectedMinPrice}">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" name="maxPrice" class="form-control form-control-sm rounded-pill" 
+                                           placeholder="Đến" th:value="${selectedMaxPrice}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary-oneshop w-100 btn-sm">
+                            <i class="fa-solid fa-magnifying-glass me-1"></i> Áp dụng bộ lọc
+                        </button>
+                    </form>
+                </div>
+            </aside>
+
+            <!-- PRODUCT LISTING -->
+            <div class="col-lg-9">
+                <!-- Toolbar: Total count & Sorting -->
+                <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 d-flex flex-row justify-content-between align-items-center">
+                    <div class="small text-muted">
+                        Tìm thấy <strong class="text-dark" th:text="${totalItems}">0</strong> sản phẩm mỹ phẩm
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="small text-muted">Sắp xếp:</span>
+                        <select class="form-select form-select-sm rounded-pill" style="width: auto;" onchange="location = this.value;">
+                            <option th:value="@{/shop(keyword=${selectedKeyword}, categoryId=${selectedCategoryId}, brandId=${selectedBrandId}, skinType=${selectedSkinType}, minPrice=${selectedMinPrice}, maxPrice=${selectedMaxPrice}, sortBy='newest')}"
+                                    th:selected="${selectedSortBy == 'newest'}">Mới nhất</option>
+                            <option th:value="@{/shop(keyword=${selectedKeyword}, categoryId=${selectedCategoryId}, brandId=${selectedBrandId}, skinType=${selectedSkinType}, minPrice=${selectedMinPrice}, maxPrice=${selectedMaxPrice}, sortBy='priceAsc')}"
+                                    th:selected="${selectedSortBy == 'priceAsc'}">Giá tăng dần</option>
+                            <option th:value="@{/shop(keyword=${selectedKeyword}, categoryId=${selectedCategoryId}, brandId=${selectedBrandId}, skinType=${selectedSkinType}, minPrice=${selectedMinPrice}, maxPrice=${selectedMaxPrice}, sortBy='priceDesc')}"
+                                    th:selected="${selectedSortBy == 'priceDesc'}">Giá giảm dần</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="row g-4" th:if="${not #lists.isEmpty(products)}">
+                    <div class="col-md-4 col-6" th:each="prod : ${products}">
+                        <div class="product-card">
+                            <span class="product-badge-skintype" th:text="${prod.skinType}">Da dầu</span>
+
+                            <div class="product-image-container">
+                                <a th:href="@{'/product/' + ${prod.id}}">
+                                    <img th:src="${prod.mainImage}" th:alt="${prod.name}">
+                                </a>
+                            </div>
+
+                            <div class="product-body">
+                                <div class="product-brand" th:text="${prod.brand != null ? prod.brand.name : 'Chính hãng'}">Thương hiệu</div>
+                                <a th:href="@{'/product/' + ${prod.id}}" class="product-title" th:text="${prod.name}">Tên sản phẩm mỹ phẩm</a>
+
+                                <div class="product-prices">
+                                    <span class="sale-price" th:text="${#numbers.formatDecimal(prod.salePrice, 0, 'COMMA', 0, 'POINT')} + ' đ'">350.000 đ</span>
+                                    <span class="original-price" th:if="${prod.originalPrice > prod.salePrice}" 
+                                          th:text="${#numbers.formatDecimal(prod.originalPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'">450.000 đ</span>
+                                </div>
+
+                                <div class="stock-indicator">
+                                    <span class="stock-dot in-stock" th:if="${prod.getTotalStock() > 0}"></span>
+                                    <span class="stock-dot out-stock" th:unless="${prod.getTotalStock() > 0}"></span>
+                                    <span class="small text-muted" th:if="${prod.getTotalStock() > 0}">
+                                        Còn hàng (<strong th:text="${prod.getTotalStock()}">10</strong>)
+                                    </span>
+                                    <span class="small text-danger" th:unless="${prod.getTotalStock() > 0}">Tạm hết hàng</span>
+                                </div>
+
+                                <button class="btn btn-primary-oneshop w-100 btn-sm btn-add-to-cart mt-1" 
+                                        th:attr="data-product-id=${prod.id}">
+                                    <i class="fa-solid fa-cart-plus me-1"></i> Thêm vào giỏ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div class="card border-0 shadow-sm rounded-4 p-5 text-center" th:if="${#lists.isEmpty(products)}">
+                    <i class="fa-solid fa-box-open fs-1 text-muted mb-3"></i>
+                    <h5 class="fw-bold">Không tìm thấy sản phẩm phù hợp</h5>
+                    <p class="text-muted small">Hãy thử tìm kiếm với từ khóa khác hoặc bỏ bớt các tiêu chí lọc.</p>
+                    <a th:href="@{/shop}" class="btn btn-outline-oneshop btn-sm mx-auto">Xem tất cả sản phẩm</a>
+                </div>
+
+                <!-- Pagination -->
+                <nav class="mt-5" th:if="${totalPages > 1}">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                            <a class="page-link rounded-circle m-1" th:href="@{/shop(page=${currentPage - 1}, keyword=${selectedKeyword}, categoryId=${selectedCategoryId}, brandId=${selectedBrandId}, skinType=${selectedSkinType}, minPrice=${selectedMinPrice}, maxPrice=${selectedMaxPrice}, sortBy=${selectedSortBy})}">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" 
+                            th:classappend="${currentPage == i} ? 'active'">
+                            <a class="page-link rounded-circle m-1" th:text="${i + 1}"
+                               th:href="@{/shop(page=${i}, keyword=${selectedKeyword}, categoryId=${selectedCategoryId}, brandId=${selectedBrandId}, skinType=${selectedSkinType}, minPrice=${selectedMinPrice}, maxPrice=${selectedMaxPrice}, sortBy=${selectedSortBy})}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                            <a class="page-link rounded-circle m-1" th:href="@{/shop(page=${currentPage + 1}, keyword=${selectedKeyword}, categoryId=${selectedCategoryId}, brandId=${selectedBrandId}, skinType=${selectedSkinType}, minPrice=${selectedMinPrice}, maxPrice=${selectedMaxPrice}, sortBy=${selectedSortBy})}">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

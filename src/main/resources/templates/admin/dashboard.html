@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Bảng Điều Khiển - Thống Kê Chuỗi SkinViet_MyPham Shop</title>
+</head>
+<body>
+
+    <!-- Thông báo nếu là Quản lý chi nhánh -->
+    <div class="alert alert-info rounded-3 mb-4" th:if="${managedBranch != null}">
+        <i class="fa-solid fa-store me-2"></i> Bạn đang đăng nhập với quyền <strong>Quản lý chi nhánh: <span th:text="${managedBranch.name}">Chi nhánh</span></strong>. Số liệu dưới đây được thống kê riêng cho chi nhánh này.
+    </div>
+
+    <!-- HÀNG THẺ THỐNG KÊ (STAT CARDS) -->
+    <div class="row g-4 mb-4">
+        <!-- Doanh thu -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-title">Doanh Thu Đã Thu</div>
+                    <div class="stat-number text-danger" th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</div>
+                </div>
+                <div class="stat-icon primary">
+                    <i class="fa-solid fa-sack-dollar"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tổng đơn hàng -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-title">Tổng Đơn Hàng</div>
+                    <div class="stat-number" th:text="${totalOrders}">0</div>
+                </div>
+                <div class="stat-icon info">
+                    <i class="fa-solid fa-cart-flatbed"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Đơn chờ xử lý -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-title">Đơn Chờ Xử Lý</div>
+                    <div class="stat-number text-warning" th:text="${pendingOrders}">0</div>
+                </div>
+                <div class="stat-icon warning">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Số lượng chi nhánh hoặc sản phẩm -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-title" th:text="${totalBranches != null ? 'Chi Nhánh Đang Hoạt Động' : 'Đơn Đã Hoàn Thành'}">Chi nhánh</div>
+                    <div class="stat-number text-success" th:text="${totalBranches != null ? totalBranches : completedOrders}">3</div>
+                </div>
+                <div class="stat-icon success">
+                    <i class="fa-solid fa-shop"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BIỂU ĐỒ DOANH THU SO SÁNH GIỮA CÁC CHI NHÁNH CHUỖI (CHART.JS) -->
+    <div class="row g-4 mb-4" th:if="${branchLabelsJson != null}">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold m-0"><i class="fa-solid fa-chart-column text-danger me-2"></i>Doanh Thu So Sánh Giữa Các Chi Nhánh Chuỗi</h6>
+                    <span class="badge bg-light text-muted border">Đơn vị: VNĐ</span>
+                </div>
+                <div style="height: 320px;">
+                    <canvas id="branchRevenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <h6 class="fw-bold mb-3"><i class="fa-solid fa-bolt text-warning me-2"></i>Thao Tác Nhanh</h6>
+                <div class="d-flex flex-column gap-2">
+                    <a th:href="@{/admin/stocks}" class="btn btn-outline-primary text-start py-2 rounded-3">
+                        <i class="fa-solid fa-boxes-stacked me-2"></i> Điều chỉnh Tồn kho chi nhánh
+                    </a>
+                    <a th:href="@{/admin/orders}" class="btn btn-outline-success text-start py-2 rounded-3">
+                        <i class="fa-solid fa-receipt me-2"></i> Duyệt đơn hàng mới
+                    </a>
+                    <a th:href="@{/admin/products/create}" class="btn btn-outline-danger text-start py-2 rounded-3">
+                        <i class="fa-solid fa-plus me-2"></i> Thêm mỹ phẩm mới (Cloudinary)
+                    </a>
+                    <a th:href="@{/admin/branches/create}" class="btn btn-outline-dark text-start py-2 rounded-3">
+                        <i class="fa-solid fa-store me-2"></i> Mở thêm chi nhánh mới
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT KHỞI TẠO BIỂU ĐỒ CHART.JS -->
+    <script th:if="${branchLabelsJson != null}" th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            const labels = JSON.parse(/*[[${branchLabelsJson}]]*/ '[]');
+            const data = JSON.parse(/*[[${branchRevenuesJson}]]*/ '[]');
+
+            const ctx = document.getElementById('branchRevenueChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Doanh thu (VNĐ)',
+                        data: data,
+                        backgroundColor: [
+                            'rgba(216, 67, 116, 0.7)',
+                            'rgba(54, 153, 255, 0.7)',
+                            'rgba(80, 205, 137, 0.7)',
+                            'rgba(255, 199, 0, 0.7)'
+                        ],
+                        borderColor: [
+                            '#d84374',
+                            '#3699ff',
+                            '#50cd89',
+                            '#ffc700'
+                        ],
+                        borderWidth: 1.5,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return new Intl.NumberFormat('vi-VN').format(value) + ' đ';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

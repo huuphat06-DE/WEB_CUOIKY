@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quản Lý Sản Phẩm Mỹ Phẩm - SkinViet Admin</title>
+</head>
+<body>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold m-0"><i class="fa-solid fa-pump-soap text-danger me-2"></i>Danh Sách Sản Phẩm Mỹ Phẩm</h4>
+            <p class="text-muted small m-0">Quản lý các mặt hàng skincare, makeup, nước hoa và hình ảnh Cloudinary</p>
+        </div>
+        <a th:href="@{/admin/products/create}" class="btn btn-danger btn-sm rounded-pill px-3">
+            <i class="fa-solid fa-plus me-1"></i> Thêm Sản Phẩm Mới
+        </a>
+    </div>
+
+    <!-- Alert -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show rounded-3" role="alert">
+        <span th:text="${successMessage}">Thành công</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light small text-muted">
+                    <tr>
+                        <th class="ps-4">Ảnh & Sản Phẩm</th>
+                        <th>Thương Hiệu</th>
+                        <th>Danh Mục</th>
+                        <th>Loại Da</th>
+                        <th>Giá Gốc / Khuyến Mãi</th>
+                        <th>Tổng Tồn Kho</th>
+                        <th>Nổi Bật</th>
+                        <th class="pe-4 text-end">Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${products}">
+                        <td class="ps-4 py-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <img th:src="${p.mainImage}" width="55" height="55" class="rounded-3 border" style="object-fit: cover;">
+                                <div>
+                                    <div class="fw-semibold text-dark" th:text="${p.name}">Tên sản phẩm</div>
+                                    <div class="small text-muted" th:text="'SKU: ' + ${p.sku}">SKU</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td th:text="${p.brand != null ? p.brand.name : '-'}">La Roche-Posay</td>
+                        <td><span class="badge bg-light text-dark border" th:text="${p.category != null ? p.category.name : '-'}">Chăm sóc da</span></td>
+                        <td><span class="badge bg-light text-danger border" th:text="${p.skinType}">Da dầu</span></td>
+                        <td>
+                            <div class="fw-bold text-danger" th:text="${#numbers.formatDecimal(p.salePrice, 0, 'COMMA', 0, 'POINT')} + ' đ'">300.000 đ</div>
+                            <div class="small text-muted text-decoration-line-through" th:if="${p.originalPrice > p.salePrice}"
+                                 th:text="${#numbers.formatDecimal(p.originalPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'">400.000 đ</div>
+                        </td>
+                        <td>
+                            <span class="badge bg-success" th:if="${p.getTotalStock() > 0}" th:text="${p.getTotalStock()} + ' SP'">10 SP</span>
+                            <span class="badge bg-secondary" th:unless="${p.getTotalStock() > 0}">Hết hàng</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-warning text-dark" th:if="${p.featured}"><i class="fa-solid fa-star me-1"></i>Hot</span>
+                            <span class="text-muted small" th:unless="${p.featured}">-</span>
+                        </td>
+                        <td class="pe-4 text-end">
+                            <a th:href="@{'/admin/products/edit/' + ${p.id}}" class="btn btn-sm btn-outline-primary me-1 rounded-circle p-2" title="Chỉnh sửa">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <a th:href="@{'/admin/products/delete/' + ${p.id}}" class="btn btn-sm btn-outline-danger rounded-circle p-2" 
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');" title="Xóa">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

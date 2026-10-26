@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Trang Chủ - Mỹ Phẩm Chính Hãng Chuỗi Cửa Hàng SkinViet_MyPham Shop</title>
+</head>
+<body>
+
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <span class="hero-tag"><i class="fa-solid fa-sparkles me-1"></i> Chuỗi Mỹ Phẩm O2O Hàng Đầu</span>
+                    <h1 class="hero-title">Đánh Thức Vẻ Đẹp Thuần Khiết</h1>
+                    <p class="hero-subtitle">
+                        Khám phá hơn 1.000+ sản phẩm chăm sóc da và trang điểm cao cấp. Trải nghiệm mua sắm linh hoạt: đặt online hoặc nhận hàng ngay tại chi nhánh gần bạn nhất!
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a th:href="@{/shop}" class="btn btn-primary-oneshop px-4 py-3 fs-6">
+                            <i class="fa-solid fa-bag-shopping me-2"></i> Mua sắm ngay
+                        </a>
+                        <a th:href="@{/shop(skinType='Da dầu mụn')}" class="btn btn-outline-oneshop px-4 py-3 fs-6">
+                            <i class="fa-solid fa-droplet me-2"></i> Giải pháp cho da dầu mụn
+                        </a>
+                    </div>
+
+                    <!-- Store Chain Quick Highlight -->
+                    <div class="mt-4 pt-3 border-top border-light-subtle d-flex align-items-center gap-3 text-secondary small">
+                        <span><i class="fa-solid fa-store text-danger me-1"></i> Có mặt tại Hà Nội, TP.HCM & Đà Nẵng</span>
+                        <span>•</span>
+                        <span><i class="fa-solid fa-truck-fast text-success me-1"></i> Giao nhanh 2h</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 text-center">
+                    <div class="position-relative d-inline-block">
+                        <img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=700&q=80" 
+                             alt="SkinViet_MyPham Shop" class="img-fluid rounded-4 shadow-lg" style="max-height: 460px; object-fit: cover;">
+                        <div class="position-absolute bottom-0 start-0 bg-white p-3 rounded-3 shadow-sm m-3 text-start border border-light">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="badge bg-success"><i class="fa-solid fa-check"></i> 100% Authentic</span>
+                                <span class="small text-muted">Cam kết chính hãng</span>
+                            </div>
+                            <div class="fw-bold text-dark fs-6">Hơn 50.000+ Khách hàng tin dùng</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TRUST BADGES -->
+    <section class="py-4 border-bottom bg-white">
+        <div class="container">
+            <div class="row g-3 text-center text-md-start">
+                <div class="col-md-3 col-6 d-flex align-items-center gap-3">
+                    <i class="fa-solid fa-shield-heart fs-1 text-danger"></i>
+                    <div>
+                        <div class="fw-bold text-dark">100% Chính Hãng</div>
+                        <div class="small text-muted">Bồi thường 200% nếu giả</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 d-flex align-items-center gap-3">
+                    <i class="fa-solid fa-store fs-1 text-primary"></i>
+                    <div>
+                        <div class="fw-bold text-dark">Nhận Tại Cửa Hàng</div>
+                        <div class="small text-muted">Lấy hàng ngay sau 30 phút</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 d-flex align-items-center gap-3">
+                    <i class="fa-solid fa-arrows-rotate fs-1 text-success"></i>
+                    <div>
+                        <div class="fw-bold text-dark">Đổi Trả 14 Ngày</div>
+                        <div class="small text-muted">Thủ tục nhanh chóng, an tâm</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 d-flex align-items-center gap-3">
+                    <i class="fa-solid fa-headset fs-1 text-warning"></i>
+                    <div>
+                        <div class="fw-bold text-dark">Tư Vấn Da Chuẩn Y Khoa</div>
+                        <div class="small text-muted">Hỗ trợ 24/7 nhiệt tình</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DANH MỤC NỔI BẬT -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <span class="text-danger fw-bold text-uppercase small">Danh mục phổ biến</span>
+                    <h2 class="h3 fw-bold text-dark m-0">Khám Phá Theo Nhu Cầu</h2>
+                </div>
+                <a th:href="@{/shop}" class="text-danger fw-semibold text-decoration-none">Xem tất cả <i class="fa-solid fa-arrow-right ms-1"></i></a>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-lg-3 col-6" th:each="cat : ${categories}">
+                    <a th:href="@{/shop(categoryId=${cat.id})}" class="text-decoration-none text-dark">
+                        <div class="card border-0 rounded-4 shadow-sm h-100 overflow-hidden text-center p-3 bg-white hover-shadow transition">
+                            <img th:src="${cat.image}" class="rounded-circle mx-auto mb-3" width="90" height="90" style="object-fit: cover;" th:alt="${cat.name}">
+                            <h5 class="fs-6 fw-bold mb-1" th:text="${cat.name}">Tên danh mục</h5>
+                            <span class="small text-muted" th:text="${cat.description}">Mô tả</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SẢN PHẨM BÁN CHẠY (FEATURED PRODUCTS) -->
+    <section class="py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <span class="text-danger fw-bold text-uppercase small">Được yêu thích nhất</span>
+                    <h2 class="h3 fw-bold text-dark m-0">Sản Phẩm Bán Chạy Trong Tuần</h2>
+                </div>
+                <a th:href="@{/shop}" class="btn btn-outline-oneshop btn-sm">Xem toàn bộ mỹ phẩm</a>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-xl-3 col-lg-4 col-md-6 col-6" th:each="prod : ${featuredProducts}">
+                    <div class="product-card">
+                        <span class="product-badge-featured">Hot</span>
+                        <span class="product-badge-skintype" th:text="${prod.skinType}">Da dầu</span>
+
+                        <div class="product-image-container">
+                            <a th:href="@{'/product/' + ${prod.id}}">
+                                <img th:src="${prod.mainImage}" th:alt="${prod.name}">
+                            </a>
+                        </div>
+
+                        <div class="product-body">
+                            <div class="product-brand" th:text="${prod.brand != null ? prod.brand.name : 'Chính hãng'}">Thương hiệu</div>
+                            <a th:href="@{'/product/' + ${prod.id}}" class="product-title" th:text="${prod.name}">Tên sản phẩm mỹ phẩm</a>
+
+                            <div class="product-prices">
+                                <span class="sale-price" th:text="${#numbers.formatDecimal(prod.salePrice, 0, 'COMMA', 0, 'POINT')} + ' đ'">350.000 đ</span>
+                                <span class="original-price" th:if="${prod.originalPrice > prod.salePrice}" 
+                                      th:text="${#numbers.formatDecimal(prod.originalPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'">450.000 đ</span>
+                            </div>
+
+                            <!-- Hiển thị tình trạng còn hàng theo chi nhánh đang chọn -->
+                            <div class="stock-indicator">
+                                <span class="stock-dot in-stock" th:if="${prod.getTotalStock() > 0}"></span>
+                                <span class="stock-dot out-stock" th:unless="${prod.getTotalStock() > 0}"></span>
+                                <span class="small text-muted" th:if="${prod.getTotalStock() > 0}">
+                                    Còn hàng (<strong th:text="${prod.getTotalStock()}">10</strong> toàn chuỗi)
+                                </span>
+                                <span class="small text-danger" th:unless="${prod.getTotalStock() > 0}">Tạm hết hàng</span>
+                            </div>
+
+                            <button class="btn btn-primary-oneshop w-100 btn-sm btn-add-to-cart mt-1" 
+                                    th:attr="data-product-id=${prod.id}">
+                                <i class="fa-solid fa-cart-plus me-1"></i> Thêm vào giỏ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- THƯƠNG HIỆU ĐỐI TÁC HÀNG ĐẦU -->
+    <section class="py-5 bg-light border-top">
+        <div class="container text-center">
+            <span class="text-muted fw-bold text-uppercase small">Đối tác phân phối chính hãng</span>
+            <h3 class="h4 fw-bold text-dark mt-1 mb-4">Các Thương Hiệu Mỹ Phẩm Danh Tiếng</h3>
+            <div class="row g-3 justify-content-center align-items-center">
+                <div class="col-lg-2 col-md-4 col-6" th:each="br : ${brands}">
+                    <a th:href="@{/shop(brandId=${br.id})}" class="text-decoration-none">
+                        <div class="card border-0 shadow-sm p-3 rounded-3 text-center bg-white hover-shadow">
+                            <span class="fw-bold text-dark" th:text="${br.name}">Brand Name</span>
+                            <span class="small text-muted" th:text="${br.country}">Pháp</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>
